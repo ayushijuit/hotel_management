@@ -1,0 +1,271 @@
+<button onclick="document.getElementById('id01').style.display='block'" class="btn btn-primary" style="margin-left: 50%">Add Room</button>
+<div style='display: none' id="loading-bar-spinner" class="spinner">
+    <div class="spinner-icon"></div>
+</div>
+<div>
+    <div class="form-group">
+        <b>
+            <label for="username">From</label>
+        </b>
+        <input type="date" id='from' bsDatePicker [(ngModel)]='from' class="form-control">
+    </div>
+    <div class="form-group">
+        <b>
+            <label for="username">To</label>
+        </b>
+        <input type="date" id='to' bsDatePicker [(ngModel)]='to' class="form-control">
+    </div>
+    <button (click)='datewise()' class="btn bnt-success">Find Room Number</button>
+    <button *ngIf="removeRoomNumber" (click)='removeRoomNumber1()' class="btn bnt-success">Remove Room Numbers</button>
+</div>
+
+
+<!-- <select>
+    <option *ngFor = "let details of dateWiseCustomerDetails">{{details.roomId}}</option>
+</select> -->
+
+<ol class="roomdetals">
+    <li *ngFor="let details of dateWiseCustomerDetails" (click)="getDetails(details.roomId)">{{details.roomId}}</li>
+</ol>
+
+
+<table class='box1' *ngFor='let details of individualDetails'>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>CheckIn</th>
+        <th>CheckOut</th>
+        <th>RoomId</th>
+        <th>Room Price</th>
+        <th>Status</th>
+        <th>City</th>
+    </tr>
+    <tr>
+        <td>{{details.customerName}}</td>
+        <td>{{details.email}}</td>
+        <td>{{details.email}}</td>
+        <td>{{details.entryDay.year}}/{{details.entryDay.months}}/{{details.entryDay.date}}</td>
+        <td>{{details.existDay.year}}/{{details.existDay.months}}/{{details.existDay.date}}</td>
+        <td>{{details.roomId}}</td>
+        <td>{{details.roomPrice}}</td>
+        <td>{{details.status}}</td>
+        <td>{{details.city}}</td>
+    </tr>
+</table>
+
+<script>    
+</script>
+
+<br>
+<br>
+<br>
+<br>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
+
+
+<br>
+<table *ngFor="let room of totalRooms" class='box'>
+    <tr>
+        <th> Room Number:</th>&nbsp;
+        <th> Room Image:</th>&nbsp;
+        <th> Room Price:</th>&nbsp;
+        <th> Beds:</th>&nbsp;
+        <th> Status:</th>&nbsp;
+        <th> Discount Coupen:</th>&nbsp;
+    </tr>
+    <tr class='space'>
+        <td>{{room.roomNumber}}</td>&nbsp;
+        <td>
+            <img src="{{room.image}}" alt="HotelImage" height="50">
+        </td>&nbsp;
+        <td>{{room.RoomPrice}}</td>&nbsp;
+        <td>{{room.beds}}</td>&nbsp;
+        <td>{{room.status}}</td>&nbsp;
+        <td>{{room.coupen}}</td>&nbsp;
+        <button [disabled]='statusOfCustomer' (click)='customerDetails(room.status, room.roomNumber, room.RoomPrice)'>Customer Details</button>
+
+        <button (click)="remosveRoom(room.status , room.roomNumber)">Remove Room</button>
+        <button (click)=' editRoom(room.roomNumber  )'>Edit Room</button>
+    </tr>
+    <h1>Lodge Details</h1>
+</table>
+
+<div class="w3-container">
+    <div id="id04" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:260px">
+            <form class="w3-container" [formGroup]='editRoomFrom' (ngSubmit)='onEditRoom(roomNumber)' submitted1 novalidate>
+                <div class="w3-section">
+                    <div class="form-group">
+                        <label for="username">Room Number</label>
+                        <!-- <input size="10" formControlName="roomNumber" class="form-control" type="number">
+                        <!-- <span class="alert alert-danger" *ngIf="submitted1 && editRoomFrom.get('roomNumber').errors['pattern']">Not Valid RoomNumber</span>
+                        <span class="alert alert-danger" *ngIf="submitted1 && editRoomFrom.controls.roomNumber.hasError('required')">Enter the RoomNumber </span>
+                        <span class="alert alert-danger" *ngIf="!editRoomFrom.get('roomNumber').valid && editRoomFrom.get('roomNumber').touched">Not Valid</span> -->
+                        {{roomNumber}}
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Room Price</label>
+                        <input size="10" formControlName="RoomPrice1" class="form-control" type="number">
+                        <span class="alert alert-danger" *ngIf="submitted1 && editRoomFrom.get('RoomPrice1').errors['pattern']">Not Valid Room Price</span>
+                        <span class="alert alert-danger" *ngIf="submitted1 && editRoomFrom.controls.RoomPrice1.hasError('required')">Enter the Room Price </span>
+                        <span class="alert alert-danger" *ngIf="!editRoomFrom.get('RoomPrice1').valid && editRoomFrom.get('RoomPrice1').touched">Not Valid</span> 
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Status</label><br>
+                        <select formControlName = 'status1'>
+                            <option value="Available"> Available</option>
+                            <option value="Booked">Booked</option>
+                            <span class="alert alert-danger" *ngIf="!editRoomFrom.get('status1').valid && editRoomFrom.get('status1').touched">Please Select at least One</span> 
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Bed Count</label>
+                        <input size="10" formControlName="beds1" class="form-control" maxlength='1' type='number'>
+                        <div *ngIf=" submitted1 &&  editRoomFrom.get('beds1').errors('maxlength')">Not valid Bed Count</div>
+                        <span class="alert alert-danger" *ngIf="!editRoomFrom.get('beds1').valid && editRoomFrom.get('beds1').touched">Not Valid</span> 
+                        <span class="alert alert-danger" *ngIf="submitted1 && editRoomFrom.get('beds1').errors['pattern']">Not Valid Room Price</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Image</label>
+                        <input size="10" accept="image/*" formControlName="image1" type="file" (change)="handleFileSelect1($event)">
+                        <img src="{{imageUrl}}" height="50">
+                        <span class="alert alert-danger" *ngIf="submitted1 && editRoomFrom.controls.RoomPrice.hasError('required')">Choose Image</span> 
+                         <!-- <span class="alert alert-danger" *ngIf="!editRoomFrom.get('image1').valid && editRoomFrom.get('image1').touched">Not Valid</span> -->
+                    </div>
+
+                    <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">Edit Room</button>
+                    <button class='btn bnt-success' type="button" (click) = 'closeEditRoom()'>Cancel</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<div class="w3-container">
+    <div id="id01" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
+            <form class="w3-container" [formGroup]='addRoom' (ngSubmit)='onAddRoom()' submitted novalidate>
+                <div class="w3-section">
+                    <div class="form-group">
+                        <label for="username">Room Number</label>
+                        <input size="10" formControlName="roomNumber" class="form-control" type="number">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('customerName').valid && bookRoom.get('customerName').touched">| -->
+                        <span class="alert alert-danger" *ngIf="submitted && addRoom.get('roomNumber').errors['pattern']">Not Valid RoomNumber</span>
+                        <span class="alert alert-danger" *ngIf="submitted && addRoom.controls.roomNumber.hasError('required')">Enter the RoomNumber </span>
+                        <span class="alert alert-danger" *ngIf="!addRoom.get('roomNumber').valid && addRoom.get('roomNumber').touched">Not Valid</span>
+                        <!-- </span> -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Room Price</label>
+                        <input size="10" formControlName="RoomPrice" class="form-control" type="number">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('customerName').valid && bookRoom.get('customerName').touched">| -->
+                        <span class="alert alert-danger" *ngIf="submitted && addRoom.get('RoomPrice').errors['pattern']">Not Valid RoomNumber</span>
+                        <span class="alert alert-danger" *ngIf="submitted && addRoom.controls.RoomPrice.hasError('required')">Enter the RoomNumber </span>
+                        <span class="alert alert-danger" *ngIf="!addRoom.get('RoomPrice').valid && addRoom.get('RoomPrice').touched">Not Valid</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Bed Count</label>
+                        <input size="10" formControlName="beds" class="form-control" maxlength='1' type='number'>
+                        <div *ngIf=" submitted &&  addRoom.get('beds').errors('maxlength')">Not valid Bed Count</div>
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('customerName').valid && bookRoom.get('customerName').touched">| -->
+                        <!-- <span class="alert alert-danger" *ngIf="submitted && addRoom.get('beds').errors['maxLength']">Not Valid Bed  umber</span> -->
+                        <!-- <span class="alert alert-danger" *ngIf="submitted && addRoom.controls.RoomPrice.hasError('required')">Bed Count Required </span>
+                        <span class="alert alert-danger" *ngIf="!addRoom.get('beds').valid && addRoom.get('beds').touched">Not Valid</span> -->
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Image</label>
+                        <input size="10" accept="image/*" formControlName="image" type="file" (change)="handleFileSelect($event)">
+                        <span class="alert alert-danger" *ngIf="submitted && addRoom.controls.RoomPrice.hasError('required')">Choose Image</span>
+                        <span class="alert alert-danger" *ngIf="!addRoom.get('image').valid && addRoom.get('image').touched">Not Valid</span>
+                    </div>
+
+                    <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">Add Room</button>
+                </div>
+            </form>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button onclick="document.getElementById('id01').style.display='none'" type="button" class="w3-button w3-red" (click)="hideRoomAdd()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<div class="w3-container">
+    <div id="id02" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:260px" id='content' #content>
+            <form class="w3-container">
+                <div class="w3-section">
+                    <!-- /*ngFor='let details of detailsOfCustomer' -->
+                    <div>
+                        <h1 style="text-align: center">Total Bill</h1>
+                        <label>
+                            <b>Room Number: {{RoomId}}</b>
+                        </label>
+                        <br>
+                        <label>
+                            <b>Room Cost:{{defaultRoomPrice}}</b>
+                        </label>
+                        <br>
+                        <label>
+                            <b>City: {{city}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <b>Total Lodge Amount: {{totalLodgeAmount}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <b>Extra Towel: {{extraTowel}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <b>Extra Food: {{extraFood}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <label>
+                                <b>Extra Beds: {{extraBedSheet}}</b>
+                                <br>
+                            </label>
+                            <h1 style="text-align: center">Customer Details</h1>
+                            <br>
+                        </label>
+                        <!-- A -->
+                        <label>
+                            <b> CustomerName: {{customerName}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <b> Email: {{email}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <b> CheckOut Date: {{existDayYear}}/{{existDayMonth}}/{{existDayDate}}</b>
+                            <br>
+                        </label>
+
+                        <label>
+                            <b> IdProof: {{idProof}}</b>
+                            <br>
+                        </label>
+                        <label>
+                            <b> Coupen Used: {{coupen}}</b>
+                            <br>
+                        </label>
+                    </div>
+                </div>
+                <button class="btn bnt-success" (click)='generatePDF()'>Generate Report: Format PDF</button>
+            </form>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button type="button" class="w3-button w3-red" (click)="hideRoomAdd()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

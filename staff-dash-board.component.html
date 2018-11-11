@@ -1,0 +1,236 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<div style='display: none' id="loading-bar-spinner" class="spinner">
+    <div class="spinner-icon"></div>
+</div>
+
+<button (click)="bookedRooms('Booked')">Booked Rooms</button>
+<button (click)="availableRooms('Available')">Available Rooms</button>
+<table *ngFor="let room of totalRooms1" class='box'>
+
+    <tr (click)="allocateRoomModal(room.roomNumber, room.status, room.RoomPrice, room.coupen)">
+        <th> Room Number:</th>&nbsp;
+
+        <th> Room Image:</th>&nbsp;
+        <th> Total Room cost:</th>&nbsp;
+        <th> Beds:</th>&nbsp;
+        <th> Status:</th>&nbsp;
+        <th> Discount Coupen:</th>&nbsp;
+        <!-- <button class="btn btn-success" *ngIf = 'allocate' (click) =  "allocateRoomModal(room.roomNumber)">Allocate Room</button> -->
+    </tr>
+
+    <tr class='space'>
+        <td>{{room.roomNumber}}</td>&nbsp;
+        <td>
+            <img src="{{room.image}}" alt="HotelImage" height="50">
+        </td>&nbsp;
+        <td id='demo'>{{room.RoomPrice}}</td>&nbsp;
+
+        <!-- <s><td >{{room.RoomPrice}}</td></s>&nbsp; -->
+        <!-- *ngIf = 'originalPrice' -->
+        <!-- *ngIf = "checkOutButton" -->
+        <td>{{room.beds}}</td>&nbsp;
+        <td>{{room.status}}</td>&nbsp;
+        <td>{{room.coupen}}</td>&nbsp;
+        <br>{{coupenUsed}}
+        <button class="btn btn-primary" (click)='checkOut(room.roomNumber, room.status, room.RoomPrice, room.coupen)'>CheckOut</button>
+        <button class="btn btn-success" (click)='lodging(room.roomNumber, room.status, room.RoomPrice)' type="button">Add Lodge</button>
+    </tr>
+</table>
+
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<div class="w3-container">
+    <div id="id01" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:260px">
+            <form class="w3-container" submitted [formGroup]='bookRoom' novalidate (ngSubmit)="timeSet()">
+                <div class="w3-section">
+                    <!-- <label>
+                          <b>Room Number</b>
+                         <br>
+                      {{roomId}}<br> 
+                    </label> -->
+                    <div class="form-group">
+                        <label for="username">Room Number</label>
+                        {{roomId}}
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Customer Name</label>
+                        <input size="10" formControlName="customerName" class="form-control" type="text">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('customerName').valid && bookRoom.get('customerName').touched">| -->
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('customerName').errors['pattern']">Not Valid customerName</span>
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.controls.customerName.hasError('required')">Enter the customerName </span>
+                        <span class="alert alert-danger" *ngIf="!bookRoom.get('customerName').valid && bookRoom.get('customerName').touched">Not Valid</span>
+                        <!-- </span> -->
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Email</label>
+                        <input size="10" formControlName="email" class="form-control" type="text">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('email').valid && bookRoom.get('email').touched"> -->
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('email').errors['pattern']">Not Valid email</span>
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('email').errors['required']">Enter the email </span>
+                        <span class="alert alert-danger" *ngIf="!bookRoom.get('email').valid && bookRoom.get('email').touched">Not Valid</span>
+                        <!-- </span> -->
+                    </div>
+                    <div class="form-group">
+                        <label for="username">IdProof</label>
+                        <input size="10" formControlName="idProof" class="form-control" type="text">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('idProof').valid && bookRoom.get('idProof').touched"> -->
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('idProof').errors['maxLength']">Not Valid idProof</span>
+                        <span class="alert alert-danger" *ngIf="!bookRoom.get('idProof').valid && bookRoom.get('idProof').touched"></span>
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('idProof').errors['required']">Enter the idProof </span>
+                        <span class="alert alert-danger" *ngIf="!bookRoom.get('idProof').valid && bookRoom.get('idProof').touched">Not Valid</span>
+                        <!-- </span> -->
+
+                    </div>
+                    <div class="form-group">
+                        <b>
+                            <label for="username">City</label>
+                        </b>
+                        <input size="10" formControlName="city" class="form-control" type="text">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('city').valid && bookRoom.get('city').touched"> -->
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('city').errors['required']">Enter City </span>
+                        <!-- </span> -->
+                    </div>
+                    <label>
+                        <div class="form-group">
+                            <b>
+                                <label for="username">Coupun</label>
+                            </b>
+                            <input size="10" formControlName="coupen" class="form-control" type="text">
+                        </div>
+                    </label>
+                    <!-- <div class="form-group">
+                        <b>
+                            <label for="username">CheckIn</label>
+                        </b>
+                        <input type="date" bsDatePicker formControlName='entryDay' class="form-control">
+                        <span class="alert alert-danger" *ngIf="!bookRoom.get('entryDay').valid && bookRoom.get('entryDay').touched">
+                            <span class="alert alert-danger" *ngIf="bookRoom.get('entryDay').errors['required']">Entery Day </span>
+                        </span>
+                    </div> -->
+                    <div class="form-group">
+                        <b>
+                            <label for="username">CheckOut</label>
+                        </b>
+                        <input type="date" bsDatePicker formControlName='existDay' id="datepicker" class="form-control">
+                        <!-- <span class="alert alert-danger" *ngIf="!bookRoom.get('existDay').valid && bookRoom.get('existDay').touched"> -->
+                        <span class="alert alert-danger" *ngIf="submitted && bookRoom.get('existDay').errors['required']">Exsit Day </span>
+                        <span class="alert alert-danger" *ngIf="!bookRoom.get('existDay').valid && bookRoom.get('existDay').touched"> Not Valid</span>
+                        <!-- </span> -->
+                    </div>
+                </div>
+                <button class='btn btn-primary' style="text-align: center" type='submit'>Allocate Room</button>
+            </form>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button type="button" class="w3-button w3-red" (click)="hideRoomAdd()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+
+
+<div class="w3-container">
+    <div id="id03" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+            <form class="w3-container">
+                <div class="w3-section">
+                    <div style="border: solid 2px" *ngFor='let details of detailsOfCustomer2'>
+                        <div class="w3-section">
+                            <h2 style="text-align: center">Customer Details</h2>
+                            <label>
+                                <b>Room Number: {{details.roomId}}</b>
+                            </label>
+                            <br>
+                            <label>
+                                <b>Customer Name: {{details.customerName}}</b>
+                            </label>
+                            <br>
+                            <label>
+                                <b>Id Proof:{{details.idProof}} </b>
+                            </label>
+                            <br>
+                            <label>
+                                <b>City: {{details.city}}</b>
+                            </label>
+
+
+                            <h1 *ngIf="lodge" style="text-align: center">
+                                <label>Add Lodge</label>
+                            </h1>
+                            1: Add Beds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type='button' (click)='addBeds()'>+</button>&nbsp;{{bedCount}}&nbsp;
+                            <button type='button' (click)='removeBeds()'>-</button>
+                            <br>
+                            <br> 2: Add Blanket&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type='button' (click)='addBlanket()'>+</button>&nbsp;{{blanketCount}}&nbsp;
+                            <button type='button' (click)='removeBlanket()'>-</button>
+                            <br>
+                            <br> 3: Bed Sheet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type='button' (click)='addBedsheet()'>+</button>&nbsp;{{bedSheetCount}}&nbsp;
+                            <button type='button' (click)='removeBedSheet()'>-</button>
+                            <br>
+                            <br> 4: Towel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type='button' (click)="addTowel()">+</button>&nbsp;&nbsp;{{towelCount}}&nbsp;
+                            <button type='button' (click)="removeTowel()">-</button>
+                            <br>
+                            <br> 5: Food&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type='button' (click)="addFood()">+</button>&nbsp;{{foodCount}}&nbsp;
+                            <button type='button' (click)="removeFood()">-</button>
+                            <br>
+                            <br>
+                            <label style="margin-left: 350px">Total = Rs. {{totalLodgeAmount}} </label>
+                            <br>
+                            <button (click)="lodgingDetail(totalLodgeAmount, details.roomId, details.idProof, details.customerName, details.city, bedCount, towelCount, foodCount,  bedSheetCount)"
+                                style='margin-left: 200px' type="button" class="btn btn-success">Add All Logdes</button>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <h1 style="text-align: center">
+                    <u>
+                        <label>Extra Lodge Prices</label>
+                    </u>
+                </h1>
+                <br>
+                <br> Per Bed: &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1000
+                <br> Per Blanket: &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;200
+                <br> Per BedSheet: &nbsp;&nbsp; 200
+                <br> Per Towel: &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;100
+                <br> Per Person Food: 350
+            </form>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button onclick="document.getElementById('id03').style.display='none'" type="button" class="w3-button w3-red" (click)="hideLodgeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<!-- <div *ngFor = "let test of testArray"> 
+    <button>+</button>&nbsp;&nbsp;<button>-</button>{{test.bed}}
+    {{test.towel}}
+    {{test.food}}
+    {{test.blanket}}
+    {{test.bedSheet}}
+</div> -->
+
+<div class="w3-container">
+    <div id="id04" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:260px">
+            <form class="w3-container" *ngFor='let details of checkOutDetails'>
+                <div class="w3-section">
+                    RoomId: {{details.roomId}} CustomerName: {{details.customerName}} Email: {{details.email}} Id Proof: {{details.idProof}}
+                    City: {{details.city}} Status: {{details.status}} Total Amount : {{details.endPrice}}
+                </div>
+                <button (click)='downloadCheckOutDetails()'>Download PDF</button>
+            </form>
+            <button (click)='closeCheckOutModal()' type='button' class="btn btn-primary">Close</button>
+        </div>
+    </div>
+</div>
